@@ -74,7 +74,15 @@ export const productMutation = extendType({
         price: nonNull(floatArg()),
         description: nonNull(stringArg()),
       },
-      async resolve(_parent, args, { prisma }: context): Promise<Product> {
+      async resolve(
+        _parent,
+        args,
+        { prisma, userId }: context
+      ): Promise<Product> {
+        if (!userId) {
+          throw new Error("Can't craete Product, Not authenticated!");
+        }
+
         const { name, price, description } = args;
 
         const newProduct = await prisma.product.create({
@@ -82,7 +90,7 @@ export const productMutation = extendType({
             name,
             description,
             price,
-            creatorId: "clr9huj6o0000tequk0uvewnn",
+            creatorId: userId,
           },
         });
 
@@ -96,10 +104,17 @@ export const productMutation = extendType({
         id: nonNull(stringArg()),
       },
 
-      async resolve(_parent, { id }, { prisma }: context) {
+      async resolve(_parent, { id }, { prisma, userId }: context) {
+        if (!userId) {
+          throw new Error("Can't craete Product, Not authenticated!");
+        }
+
         const product = await prisma.product.findFirst({
           where: {
             id,
+            creator: {
+              id: userId,
+            },
           },
         });
 
@@ -120,10 +135,20 @@ export const productMutation = extendType({
         price: nullable(floatArg()),
         description: nullable(stringArg()),
       },
-      async resolve(_parent, args, { prisma }: context): Promise<Product> {
+      async resolve(
+        _parent,
+        args,
+        { prisma, userId }: context
+      ): Promise<Product> {
+        if (!userId) {
+          throw new Error("Can't craete Product, Not authenticated!");
+        }
+
         const { id, name, description, price } = args;
 
-        const product = await prisma.product.findFirst({ where: { id } });
+        const product = await prisma.product.findFirst({
+          where: { id, creator: { id: userId } },
+        });
 
         if (!product) throw new Error("Product was not found!");
 
