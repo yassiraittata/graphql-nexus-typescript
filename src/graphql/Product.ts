@@ -64,6 +64,7 @@ export const ProductQuery = extendType({
 export const productMutation = extendType({
   type: "Mutation",
   definition(t) {
+    // create product
     t.nonNull.field("createProduct", {
       type: "Product",
       args: {
@@ -86,6 +87,7 @@ export const productMutation = extendType({
       },
     });
 
+    // delete product
     t.nonNull.boolean("deleteProduct", {
       args: {
         id: nonNull(stringArg()),
@@ -103,6 +105,35 @@ export const productMutation = extendType({
         await prisma.product.delete({ where: { id } });
 
         return true;
+      },
+    });
+
+    // update product
+    t.nonNull.field("updateProduct", {
+      type: "Product",
+      args: {
+        id: nonNull(stringArg()),
+        name: nullable(stringArg()),
+        price: nullable(floatArg()),
+        description: nullable(stringArg()),
+      },
+      async resolve(_parent, args, { prisma }: context): Promise<Product> {
+        const { id, name, description, price } = args;
+
+        const product = await prisma.product.findFirst({ where: { id } });
+
+        if (!product) throw new Error("Product was not found!");
+
+        await prisma.product.update({
+          data: {
+            name: name ? name : product.name,
+            price: price ? price : product.price,
+            description: description ? description : product.description,
+          },
+          where: { id },
+        });
+
+        return product;
       },
     });
   },

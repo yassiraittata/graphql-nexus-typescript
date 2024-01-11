@@ -52,6 +52,7 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     createProduct: NexusGenRootTypes['Product']; // Product!
     deleteProduct: boolean; // Boolean!
+    updateProduct: NexusGenRootTypes['Product']; // Product!
   }
   Product: { // field return type
     description: string; // String!
@@ -69,6 +70,7 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     createProduct: 'Product'
     deleteProduct: 'Boolean'
+    updateProduct: 'Product'
   }
   Product: { // field return type name
     description: 'String'
@@ -91,6 +93,12 @@ export interface NexusGenArgTypes {
     }
     deleteProduct: { // args
       id: string; // String!
+    }
+    updateProduct: { // args
+      description?: string | null; // String
+      id: string; // String!
+      name?: string | null; // String
+      price?: number | null; // Float
     }
   }
   Query: {
