@@ -9,7 +9,6 @@ import {
 
 import type { Product, User } from "@prisma/client";
 
-import { NexusGenObjects } from "../../nexus-typegen";
 import { context } from "../../types";
 
 export const ProductType = objectType({
@@ -19,6 +18,7 @@ export const ProductType = objectType({
     t.nonNull.string("name");
     t.nonNull.string("description");
     t.nonNull.float("price");
+    t.nonNull.field("creator", { type: "User" });
   },
 });
 
@@ -33,7 +33,9 @@ export const ProductQuery = extendType({
         { prisma }: context,
         _info
       ): Promise<Product[]> {
-        const products = await prisma.product.findMany();
+        const products = await prisma.product.findMany({
+          include: { creator: true },
+        });
         return products;
       },
     });
@@ -80,6 +82,7 @@ export const productMutation = extendType({
             name,
             description,
             price,
+            creatorId: "clr9huj6o0000tequk0uvewnn",
           },
         });
 

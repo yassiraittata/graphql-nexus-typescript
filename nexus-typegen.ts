@@ -28,14 +28,25 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  Auth: { // root type
+    token: string; // String!
+    user: NexusGenRootTypes['User']; // User!
+  }
   Mutation: {};
   Product: { // root type
+    creator: NexusGenRootTypes['User']; // User!
     description: string; // String!
     id: string; // String!
     name: string; // String!
     price: number; // Float!
   }
   Query: {};
+  User: { // root type
+    email: string; // String!
+    id: string; // String!
+    name: string; // String!
+    password?: string | null; // String
+  }
 }
 
 export interface NexusGenInterfaces {
@@ -49,12 +60,19 @@ export type NexusGenRootTypes = NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
+  Auth: { // field return type
+    token: string; // String!
+    user: NexusGenRootTypes['User']; // User!
+  }
   Mutation: { // field return type
     createProduct: NexusGenRootTypes['Product']; // Product!
     deleteProduct: boolean; // Boolean!
+    login: NexusGenRootTypes['Auth']; // Auth!
+    register: NexusGenRootTypes['Auth']; // Auth!
     updateProduct: NexusGenRootTypes['Product']; // Product!
   }
   Product: { // field return type
+    creator: NexusGenRootTypes['User']; // User!
     description: string; // String!
     id: string; // String!
     name: string; // String!
@@ -64,15 +82,29 @@ export interface NexusGenFieldTypes {
     product: NexusGenRootTypes['Product'] | null; // Product
     products: NexusGenRootTypes['Product'][]; // [Product!]!
   }
+  User: { // field return type
+    email: string; // String!
+    id: string; // String!
+    name: string; // String!
+    password: string | null; // String
+    products: NexusGenRootTypes['Product'][]; // [Product!]!
+  }
 }
 
 export interface NexusGenFieldTypeNames {
+  Auth: { // field return type name
+    token: 'String'
+    user: 'User'
+  }
   Mutation: { // field return type name
     createProduct: 'Product'
     deleteProduct: 'Boolean'
+    login: 'Auth'
+    register: 'Auth'
     updateProduct: 'Product'
   }
   Product: { // field return type name
+    creator: 'User'
     description: 'String'
     id: 'String'
     name: 'String'
@@ -80,6 +112,13 @@ export interface NexusGenFieldTypeNames {
   }
   Query: { // field return type name
     product: 'Product'
+    products: 'Product'
+  }
+  User: { // field return type name
+    email: 'String'
+    id: 'String'
+    name: 'String'
+    password: 'String'
     products: 'Product'
   }
 }
@@ -93,6 +132,15 @@ export interface NexusGenArgTypes {
     }
     deleteProduct: { // args
       id: string; // String!
+    }
+    login: { // args
+      email: string; // String!
+      password: string; // String!
+    }
+    register: { // args
+      email: string; // String!
+      name: string; // String!
+      password: string; // String!
     }
     updateProduct: { // args
       description?: string | null; // String

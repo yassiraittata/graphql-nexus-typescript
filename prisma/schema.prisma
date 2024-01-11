@@ -10,6 +10,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
+  password String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Product   Product[]
+
+  @@map("users")
+}
+
 model Product {
   id          String @id @default(uuid())
   name        String
@@ -19,17 +32,8 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  creator   User   @relation(fields: [creatorId], references: [id])
+  creatorId String
+
   @@map("products")
-}
-
-model User {
-  id       String @id @default(cuid())
-  name     String
-  email    String @unique
-  password String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("users")
 }
