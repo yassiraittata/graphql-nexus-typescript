@@ -12,8 +12,6 @@ import type { Product, User } from "@prisma/client";
 import { NexusGenObjects } from "../../nexus-typegen";
 import { context } from "../../types";
 
-let products: NexusGenObjects["Product"][] = [];
-
 export const ProductType = objectType({
   name: "Product",
   definition(t) {
@@ -39,10 +37,31 @@ export const ProductQuery = extendType({
         return products;
       },
     });
+
+    t.nullable.field("product", {
+      type: "Product",
+      args: {
+        id: nonNull(stringArg()),
+      },
+      async resolve(
+        _parent,
+        args,
+        { prisma }: context
+      ): Promise<Product | null> {
+        const { id } = args;
+        const product = await prisma.product.findFirst({
+          where: {
+            id,
+          },
+        });
+
+        return product;
+      },
+    });
   },
 });
 
-export const createProduct = extendType({
+export const productMutation = extendType({
   type: "Mutation",
   definition(t) {
     t.nonNull.field("createProduct", {
@@ -64,6 +83,26 @@ export const createProduct = extendType({
         });
 
         return newProduct;
+      },
+    });
+
+    t.nonNull.boolean("deleteProduct", {
+      args: {
+        id: nonNull(stringArg()),
+      },
+
+      async resolve(_parent, { id }, { prisma }: context) {
+        const product = await prisma.product.findFirst({
+          where: {
+            id,
+          },
+        });
+
+        if (!product) throw new Error("product was not found!");
+
+        await prisma.product.delete({ where: { id } });
+
+        return true;
       },
     });
   },

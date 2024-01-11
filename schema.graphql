@@ -4,6 +4,7 @@
 
 type Mutation {
   createProduct(description: String!, name: String!, price: Float!): Product!
+  deleteProduct(id: String!): Boolean!
 }
 
 type Product {
@@ -14,5 +15,6 @@ type Product {
 }
 
 type Query {
+  product(id: String!): Product
   products: [Product!]!
 }
