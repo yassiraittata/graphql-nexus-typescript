@@ -10,7 +10,7 @@ import {
 import type { Product, User } from "@prisma/client";
 
 import { NexusGenObjects } from "../../nexus-typegen";
-import prisma from "../config/db";
+import { context } from "../../types";
 
 let products: NexusGenObjects["Product"][] = [];
 
@@ -29,7 +29,12 @@ export const ProductQuery = extendType({
   definition(t) {
     t.nonNull.list.nonNull.field("products", {
       type: "Product",
-      async resolve(_parent, _args, _context, _info): Promise<Product[]> {
+      async resolve(
+        _parent,
+        _args,
+        { prisma }: context,
+        _info
+      ): Promise<Product[]> {
         const products = await prisma.product.findMany();
         return products;
       },
@@ -47,7 +52,7 @@ export const createProduct = extendType({
         price: nonNull(floatArg()),
         description: nonNull(stringArg()),
       },
-      async resolve(_parent, args): Promise<Product> {
+      async resolve(_parent, args, { prisma }: context): Promise<Product> {
         const { name, price, description } = args;
 
         const newProduct = await prisma.product.create({
